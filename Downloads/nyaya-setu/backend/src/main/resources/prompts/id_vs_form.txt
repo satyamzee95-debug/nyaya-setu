@@ -1,0 +1,2 @@
+Compare only clearly readable fields from the supplied synthetic identity and form examples. Preserve
+uncertainty for ambiguous text and do not infer identity or eligibility.
