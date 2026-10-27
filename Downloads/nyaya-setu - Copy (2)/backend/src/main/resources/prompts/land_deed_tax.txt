@@ -1,0 +1,2 @@
+Compare only fields explicitly visible in the supplied synthetic land-deed and tax-receipt examples.
+Report field values and discrepancies with uncertainty. Do not determine ownership or make legal claims.
