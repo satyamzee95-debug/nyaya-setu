@@ -30,7 +30,7 @@ public class GemmaClientService {
             RestClient restClient,
             ObjectMapper objectMapper,
             @Value("${ai.gemini.api-key:}") String apiKey,
-            @Value("${ai.gemini.model:gemini-3.8-flash}") String model) {
+            @Value("${ai.gemini.model:gemini-3.6-flash}") String model) {
         this.restClient = restClient;
         this.objectMapper = objectMapper;
         this.apiKey = apiKey;
@@ -100,16 +100,9 @@ public class GemmaClientService {
                     .body(JsonNode.class);
             return parseResponse(caseId, response);
         } catch (RestClientResponseException exception) {
-            if (exception.getStatusCode().value() == 404) {
-                throw new AiServiceException(
-                        "Gemini could not find model '" + model + "'. Set AI_MODEL to a currently "
-                                + "available Gemini model (for example gemini-3.8-flash) in the backend "
-                                + ".env, then restart the backend. If the model is already correct, "
-                                + "check that the API key has access to it.");
-            }
             throw new AiServiceException(
                     "AI analysis failed (HTTP " + exception.getStatusCode().value()
-                            + "). Check the Gemini API key and request configuration.");
+                            + "). Check the configured model and API key.");
         } catch (AiServiceException exception) {
             throw exception;
         } catch (RuntimeException exception) {

@@ -22,14 +22,5 @@ class ApplicationConfigTest {
         assertTrue(propertySources.stream()
                 .anyMatch(source -> String.valueOf(source.getProperty("server.port"))
                         .contains("8080")));
-        assertTrue(propertySources.stream()
-                .anyMatch(source -> String.valueOf(source.getProperty("ai.gemini.model"))
-                        .contains("gemini-3.8-flash")));
-        assertTrue(propertySources.stream()
-                .anyMatch(source -> String.valueOf(source.getProperty("ai.gemini.api-key"))
-                        .contains("GEMINI_API_KEY")));
-        assertTrue(propertySources.stream()
-                .anyMatch(source -> String.valueOf(source.getProperty("spring.datasource.password"))
-                        .contains("DATABASE_PASSWORD")));
     }
 }

@@ -23,7 +23,7 @@ class GemmaClientServiceTest {
     @Test
     void reportsMissingApiKeyAsServiceUnavailable() {
         GemmaClientService service = new GemmaClientService(
-                RestClient.builder().build(), new ObjectMapper(), "", "gemini-3.8-flash");
+                RestClient.builder().build(), new ObjectMapper(), "", "gemini-3.6-flash");
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
@@ -65,7 +65,7 @@ class GemmaClientServiceTest {
                 .addObject()
                 .put("text", objectMapper.writeValueAsString(analysis));
         server.expect(requestTo(
-                        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent"))
+                        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent"))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(header("x-goog-api-key", "test-key"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -73,7 +73,7 @@ class GemmaClientServiceTest {
                 .andRespond(withSuccess(objectMapper.writeValueAsString(response), MediaType.APPLICATION_JSON));
 
         GemmaClientService service = new GemmaClientService(
-                builder.build(), objectMapper, "test-key", "gemini-3.8-flash");
+                builder.build(), objectMapper, "test-key", "gemini-3.6-flash");
         var result = service.compare(
                 caseId,
                 "application/pdf",
@@ -85,34 +85,6 @@ class GemmaClientServiceTest {
         assertEquals(38, result.riskScore());
         assertEquals("Property area", result.fields().get(0).field());
         assertEquals("Property area differs.", result.redFlags().get(0));
-        server.verify();
-    }
-
-    @Test
-    void explainsWhenConfiguredModelIsNotFound() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        RestClient.Builder builder = RestClient.builder();
-        MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
-        server.expect(requestTo(
-                        "https://generativelanguage.googleapis.com/v1beta/models/retired-model:generateContent"))
-                .andRespond(org.springframework.test.web.client.response.MockRestResponseCreators
-                        .withResourceNotFound());
-
-        GemmaClientService service = new GemmaClientService(
-                builder.build(), objectMapper, "test-key", "retired-model");
-
-        com.nyayasetu.exception.AiServiceException exception =
-                org.junit.jupiter.api.Assertions.assertThrows(
-                        com.nyayasetu.exception.AiServiceException.class,
-                        () -> service.compare(
-                                UUID.randomUUID(),
-                                "application/pdf",
-                                "%PDF-test".getBytes(),
-                                "image/png",
-                                new byte[] {(byte) 0x89, 'P', 'N', 'G'}));
-
-        org.junit.jupiter.api.Assertions.assertTrue(exception.getMessage().contains("AI_MODEL"));
-        org.junit.jupiter.api.Assertions.assertTrue(exception.getMessage().contains("retired-model"));
         server.verify();
     }
 }
